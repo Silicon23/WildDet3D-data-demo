@@ -1,0 +1,40 @@
+# Logs
+*.log
+data_prep*.log
+
+# Data directory (too large for GitHub, ~15GB)
+# Users should run prepare_data.py to generate this
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Test files
+test_*.jpg
+test_*.png

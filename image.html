@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Detail - Tinyval Visualization</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="app-container detail-page">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <a href="index.html" class="back-link">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Back to Gallery
+                </a>
+                <div class="image-info" id="image-info">
+                    <h1 class="header-title">Image <span id="image-id">-</span></h1>
+                    <div class="image-meta">
+                        <span class="badge" id="source-badge">-</span>
+                        <span class="meta-item" id="scene-path">-</span>
+                        <span class="meta-item" id="dimensions">-</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="detail-content">
+            <!-- Section 1: Filtered Best Boxes (Scored) -->
+            <section class="detail-section" id="section-filtered">
+                <div class="section-header">
+                    <h2 class="section-title">Filtered Best Boxes</h2>
+                    <p class="section-desc">Shows the highest-scoring box per object, filtered by threshold</p>
+                </div>
+                
+                <div class="threshold-control">
+                    <label for="threshold-slider">Score Threshold:</label>
+                    <input type="range" id="threshold-slider" min="0" max="11" value="5" step="1">
+                    <span class="threshold-value" id="threshold-value">5</span>
+                    <span class="threshold-info" id="threshold-info">Showing 0 / 0 objects</span>
+                </div>
+                
+                <div class="viz-grid">
+                    <div class="viz-panel">
+                        <h3 class="viz-title">2D Bounding Boxes</h3>
+                        <div class="viz-container">
+                            <canvas id="canvas-2d-filtered"></canvas>
+                            <img id="img-2d-filtered" style="display:none;">
+                        </div>
+                    </div>
+                    
+                    <div class="viz-panel">
+                        <h3 class="viz-title">3D Boxes Projected to 2D</h3>
+                        <div class="viz-container">
+                            <canvas id="canvas-3d-filtered"></canvas>
+                            <img id="img-3d-filtered" style="display:none;">
+                        </div>
+                    </div>
+                    
+                    <div class="viz-panel viz-3d">
+                        <h3 class="viz-title">Interactive 3D View</h3>
+                        <div class="viz-container threejs-container" id="threejs-filtered">
+                            <div class="loading">Loading 3D view...</div>
+                        </div>
+                        <div class="viewer-controls-hint">
+                            <span>🖱️ Left: Rotate</span>
+                            <span>🖱️ Right: Pan</span>
+                            <span>⚙️ Scroll: Zoom</span>
+                            <span>👆 Double-click: Reset</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Explore All Boxes (Pre-scored) -->
+            <section class="detail-section" id="section-explore">
+                <div class="section-header">
+                    <h2 class="section-title">Explore All Model Outputs</h2>
+                    <p class="section-desc">Compare bounding boxes from different models for each object</p>
+                </div>
+                
+                <div class="explore-controls">
+                    <div class="control-group">
+                        <label class="control-label">Select Object:</label>
+                        <div class="object-buttons" id="object-buttons">
+                            <span class="no-objects">No objects with 3D boxes</span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Show Models:</label>
+                        <div class="model-toggles" id="model-toggles">
+                            <button class="model-toggle active" data-model="sam3d">
+                                <span class="toggle-indicator"></span>
+                                SAM3D
+                            </button>
+                            <!-- Algorithm disabled due to coordinate bug - see README -->
+                            <!-- <button class="model-toggle active" data-model="algorithm">
+                                <span class="toggle-indicator"></span>
+                                Algorithm
+                            </button> -->
+                            <button class="model-toggle active" data-model="3d_mood">
+                                <span class="toggle-indicator"></span>
+                                3D-MOOD
+                            </button>
+                            <button class="model-toggle active" data-model="detany3d">
+                                <span class="toggle-indicator"></span>
+                                DetAny3D
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="viz-grid">
+                    <div class="viz-panel">
+                        <h3 class="viz-title">2D Bounding Box</h3>
+                        <div class="viz-container">
+                            <canvas id="canvas-2d-explore"></canvas>
+                            <img id="img-2d-explore" style="display:none;">
+                        </div>
+                    </div>
+                    
+                    <div class="viz-panel">
+                        <h3 class="viz-title">3D Boxes Projected to 2D</h3>
+                        <div class="viz-container">
+                            <canvas id="canvas-3d-explore"></canvas>
+                            <img id="img-3d-explore" style="display:none;">
+                        </div>
+                    </div>
+                    
+                    <div class="viz-panel viz-3d">
+                        <h3 class="viz-title">Interactive 3D View</h3>
+                        <div class="viz-container threejs-container" id="threejs-explore">
+                            <div class="loading">Loading 3D view...</div>
+                        </div>
+                        <div class="viewer-controls-hint">
+                            <span>🖱️ Left: Rotate</span>
+                            <span>🖱️ Right: Pan</span>
+                            <span>⚙️ Scroll: Zoom</span>
+                            <span>👆 Double-click: Reset</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Score Comparison Table -->
+                <div class="score-comparison" id="score-comparison">
+                    <h3 class="comparison-title">Score Comparison</h3>
+                    <div class="table-container">
+                        <table class="score-table">
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Category</th>
+                                    <th>Scale</th>
+                                    <th>Translation</th>
+                                    <th>Shape</th>
+                                    <th>Tilt</th>
+                                    <th>Rotation</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="score-table-body">
+                                <tr>
+                                    <td colspan="8" class="empty-message">Select an object to view scores</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/PLYLoader.js"></script>
+    
+    <script src="js/three-viewer.js"></script>
+    <script src="js/overlay-renderer.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
