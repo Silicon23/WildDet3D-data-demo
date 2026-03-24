@@ -43,8 +43,8 @@
                 
                 <div class="threshold-control">
                     <label for="threshold-slider">Score Threshold:</label>
-                    <input type="range" id="threshold-slider" min="0" max="11" value="5" step="1">
-                    <span class="threshold-value" id="threshold-value">5</span>
+                    <input type="range" id="threshold-slider" min="0" max="11" value="8" step="1">
+                    <span class="threshold-value" id="threshold-value">8</span>
                     <span class="threshold-info" id="threshold-info">Showing 0 / 0 objects</span>
                 </div>
                 
@@ -98,15 +98,18 @@
                     <div class="control-group">
                         <label class="control-label">Show Models:</label>
                         <div class="model-toggles" id="model-toggles">
+                            <button class="model-toggle active" data-model="la3d">
+                                <span class="toggle-indicator"></span>
+                                LA3D
+                            </button>
                             <button class="model-toggle active" data-model="sam3d">
                                 <span class="toggle-indicator"></span>
                                 SAM3D
                             </button>
-                            <!-- Algorithm disabled due to coordinate bug - see README -->
-                            <!-- <button class="model-toggle active" data-model="algorithm">
+                            <button class="model-toggle active" data-model="algorithm">
                                 <span class="toggle-indicator"></span>
                                 Algorithm
-                            </button> -->
+                            </button>
                             <button class="model-toggle active" data-model="3d_mood">
                                 <span class="toggle-indicator"></span>
                                 3D-MOOD

@@ -11,7 +11,6 @@ A static HTML visualization for the Tinyval dataset (5,000 images) designed to b
 - [Coordinate Systems](#coordinate-systems)
 - [Known Issues](#known-issues)
 - [Troubleshooting History](#troubleshooting-history)
-- [Adding Algorithm Boxes Back](#adding-algorithm-boxes-back)
 
 ---
 
@@ -42,13 +41,14 @@ This visualization server displays 3D bounding box predictions from multiple mod
 
 #### Section 2: Explore All Boxes
 - **Object buttons**: Select one object at a time (objects with ≥1 3D box)
-- **Model toggles**: sam3d, 3d_mood, detany3d (independent selection)
+- **Model toggles**: la3d, sam3d, algorithm, 3d_mood, detany3d (independent selection)
 - **Score comparison table**: Shows VLM scores (6 metrics + total) for each model
 - **Visualizations**: Same 3 views as Section 1, but for selected object/models
 
 ### Color Scheme
 | Model | Color | Hex |
 |-------|-------|-----|
+| la3d | Purple | #a855f7 |
 | sam3d | Green | #22c55e |
 | algorithm | Orange | #f97316 |
 | 3d_mood | Red | #ef4444 |
@@ -97,9 +97,12 @@ All source data comes from the 3D bounding box detection pipeline at:
 | Step 1 | `v4_depth/` | Depth maps (.npy) + camera parameters |
 | Step 2.9 | `v4_unify/` | Unscored boxes (sam3d, 3d_mood, detany3d) |
 | Step 2.9 | `v4_unify_algorithm/` | Unscored algorithm boxes |
+| Step 2.9 | `v4_unify_la3d/` | Unscored LA3D boxes |
 | Step 3 | `v4_score/` | Scored boxes (sam3d, 3d_mood, detany3d) |
 | Step 3 | `v4_score_algorithm/` | Scored algorithm boxes |
-| Step 3.5 | `v4_score_merged/` | Merged scored boxes (all models) |
+| Step 3 | `v4_score_la3d/` | Scored LA3D boxes |
+| Step 3.5 | `v4_score_merged/` | Merged scored boxes (4 models: sam3d, 3d_mood, detany3d, algorithm) |
+| Step 3.5 | `v4_score_merged_la3d/` | **Final merged scored boxes (all 5 models including LA3D)** |
 
 ### Scene Classifications
 Scene category labels come from:
@@ -146,8 +149,8 @@ Options:
    - Copies camera parameters from `v4_depth`
    - Generates point cloud PLY from depth map (downsample factor: 2, ~250k points)
 4. **Copies bounding box results**:
-   - Scored boxes from `v4_score_merged` (val split only)
-   - Unscored boxes: merges `v4_unify` + `v4_unify_algorithm`
+   - Scored boxes from `v4_score_merged_la3d` (all 5 models pre-merged: sam3d, detany3d, 3d_mood, algorithm, la3d)
+   - Unscored boxes: merges `v4_unify` + `v4_unify_algorithm` + `v4_unify_la3d`
 5. **Builds scene tree** for hierarchical navigation
 6. **Generates master index.json** with all image metadata
 
@@ -199,34 +202,35 @@ const transformedCorners = corners.map(([x, y, z]) => [x, -y, -z]);
 
 ## Known Issues
 
-### 1. Algorithm Boxes Are Misaligned ⚠️ CRITICAL
+### 1. Algorithm Boxes Were Misaligned (FIXED - Jan 2026)
 
-**Status**: Algorithm boxes are currently ignored in the visualization.
+**Status**: Fixed. Algorithm boxes are now included in the visualization.
 
-**Root Cause**: The algorithm pipeline (`process.py`) has a bug where it loads annotation masks at original resolution instead of SR resolution.
+**Root Cause**: The algorithm pipeline (`process.py`) had a bug where it loaded annotation masks at original resolution instead of SR resolution.
 
 **Details**:
 - Annotations are defined for original images (e.g., 640×394)
-- The pipeline uses `coco.annToMask(ann)` which returns masks at original resolution
+- The pipeline used `coco.annToMask(ann)` which returns masks at original resolution
 - But depth/camera params are for SR images (e.g., 2560×1576)
-- When the mask is resized to match depth, small objects get placed at wrong pixel locations
+- When the mask was resized to match depth, small objects got placed at wrong pixel locations
 
-**Evidence**:
+**Before fix** (Image 340175):
 ```
-Image 340175 (original: 640×394, SR: 2560×1576):
-
 Annotation 10 (small book, 6×18 px):
   - detany3d: center=(-3.70, -1.67, 6.07)  ← Correct
   - algorithm: center=(0.11, 1.88, 3.66)   ← Wrong!
-
-Annotation 28 (large book, 113×229 px):
-  - detany3d: center=(-4.14, -0.73, 5.84)  ← Correct
-  - algorithm: center=(-3.75, -0.62, 5.92) ← Close (large object less affected)
 ```
 
-**Fix Required** (in algorithm pipeline):
+**After fix**:
+```
+Annotation 10 (small book, 6×18 px):
+  - detany3d: center=(-3.70, -1.67, 6.07)  ← Correct
+  - algorithm: center=(-3.75, -1.68, 6.06) ← Now aligned!
+```
+
+**Fix applied** (in algorithm pipeline `process.py`):
 ```python
-# In process.py, line 358, change:
+# Changed from:
 mask_2d_orig = coco.annToMask(ann)
 
 # To:
@@ -271,46 +275,13 @@ The `DatasetHelper.get_annotation_mask()` method properly rescales masks from or
 **Cause**: Code used `algorithm_regression` but data uses `algorithm`.
 **Fix**: Updated `MODEL_PRIORITY`, `activeModels`, and HTML to use `algorithm`.
 
----
-
-## Adding Algorithm Boxes Back
-
-Once the algorithm pipeline is fixed, follow these steps:
-
-### 1. Verify the Fix
-Check that algorithm boxes now align with other models:
-```python
-# Compare box centers for same annotation
-# They should be within ~0.5m of each other for the same object
-```
-
-### 2. Re-run Step 2 Algorithm
-```bash
-# Re-process with fixed process.py
-python batch_process_v4.py --start_idx 0 --end_idx 5000 ...
-```
-
-### 3. Re-run Step 3 Scoring (Algorithm)
-```bash
-# Score the new algorithm boxes
-```
-
-### 4. Re-run Step 3.5 Merge
-```bash
-# Merge all models including fixed algorithm
-```
-
-### 5. Regenerate Visualization Data
-```bash
-cd /weka/oe-training-default/weikaih/3d_boundingbox_detection/single_frame_data/visualization
-rm -rf data
-/weka/oe-training-default/jieyuz2/improve_segments/miniconda3/bin/python scripts/prepare_data.py --workers 16
-```
-
-### 6. Verify in Visualization
-- Navigate to an image with algorithm boxes (e.g., 000000340175)
-- Check annotation 28 (large book) - should now align with detany3d
-- Check annotations 10, 11 (small books) - should now be correct
+### Problem: Algorithm boxes misaligned (small objects especially)
+**Cause**: Algorithm pipeline loaded masks at original resolution instead of SR resolution.
+**Fix**: Changed `coco.annToMask(ann)` to `dataset_helper.get_annotation_mask(ann, image_id)` in `process.py`. Then re-ran:
+1. Step 2 Algorithm (batch_process_v4.py)
+2. Step 3 Scoring Algorithm
+3. Step 3.5 Merge
+4. Regenerate visualization data with `prepare_data.py`
 
 ---
 
@@ -329,10 +300,13 @@ Each 3D box is scored on 6 metrics (0/1/2 scale each):
 
 ### Model Priority Order
 For tie-breaking when multiple models have the same score:
-1. sam3d (best overall)
-2. algorithm
-3. 3d_mood
-4. detany3d
+1. la3d (highest priority)
+2. sam3d
+3. algorithm
+4. 3d_mood
+5. detany3d
+
+All 5 models now have proper VLM scores from the unified scoring pipeline.
 
 ### Browser Compatibility
 - Tested on Chrome, Firefox, Safari

@@ -59,10 +59,13 @@ SR_IMAGES_BASE = f"{EXPERIMENT_PATH}/v4_sr"
 # Super-resolution images (used for visualization - matches intrinsics and bbox coordinates)
 SR_IMAGES_BASE = f"{EXPERIMENT_PATH}/v4_sr"
 
-# Bbox result paths - use v4_score_merged (merged from v4_score + v4_score_algorithm)
-SCORED_BOXES_BASE = f"{EXPERIMENT_PATH}/v4_score_merged"
+# Bbox result paths - use v4_score_merged_la3d (all 5 models merged: sam3d, detany3d, 3d_mood, algorithm, la3d)
+SCORED_BOXES_BASE = f"{EXPERIMENT_PATH}/v4_score_merged_la3d"
+
+# Unscored boxes - merged from all sources
 UNSCORED_BOXES_BASE = f"{EXPERIMENT_PATH}/v4_unify"
 UNSCORED_ALGORITHM_BASE = f"{EXPERIMENT_PATH}/v4_unify_algorithm"
+UNSCORED_LA3D_BASE = f"{EXPERIMENT_PATH}/v4_unify_la3d"
 
 # Output directory
 OUTPUT_DIR = Path(__file__).parent.parent / "data"
@@ -358,8 +361,17 @@ def process_single_image(args):
         return None
 
 
+
+
 def copy_bbox_results(tinyval_images, output_dir):
-    """Copy bbox result files for all images in tinyval."""
+    """
+    Copy bbox result files for all images in tinyval.
+    
+    Scored boxes come from v4_score_merged_la3d which already contains all 5 models:
+    - sam3d, detany3d, 3d_mood, algorithm, la3d
+    
+    Unscored boxes are merged from v4_unify, v4_unify_algorithm, and v4_unify_la3d.
+    """
     scored_out = output_dir / "boxes_scored"
     unscored_out = output_dir / "boxes_unscored"
     
@@ -376,29 +388,32 @@ def copy_bbox_results(tinyval_images, output_dir):
         dataset, split = get_dataset_and_split(source, file_name)
         formatted_id = format_image_id(original_id, dataset)
         
-        # Scored boxes (step 3.5) - use source directly, all scored data is in val/
-        # Note: v4_score_merged uses original source names (lvis, not coco)
+        # Scored boxes (step 3.5 merged with LA3D) - already contains all 5 models
+        # Note: v4_score_merged_la3d uses original source names (lvis, not coco)
         scored_src = Path(SCORED_BOXES_BASE) / source / "val" / f"step30_result_{formatted_id}.json"
         scored_dst = scored_out / f"{dataset}_{split}_{formatted_id}.json"
         
-        if scored_src.exists() and not scored_dst.exists():
+        if not scored_dst.exists() and scored_src.exists():
             shutil.copy2(scored_src, scored_dst)
             copied_scored += 1
         
-        # Unscored boxes (step 2.9) - merge from both sources
+        # Unscored boxes (step 2.9) - merge from all 3 sources
         # Note: use source directly and val split (all tinyval data is in val/)
         unscored_dst = unscored_out / f"{dataset}_{split}_{formatted_id}.json"
         
         if not unscored_dst.exists():
             unscored_main = Path(UNSCORED_BOXES_BASE) / source / "val" / f"step29_result_{formatted_id}.json"
             unscored_algo = Path(UNSCORED_ALGORITHM_BASE) / source / "val" / f"step29_result_{formatted_id}.json"
+            unscored_la3d = Path(UNSCORED_LA3D_BASE) / source / "val" / f"step29_result_{formatted_id}.json"
             
             merged_data = None
             
+            # Load main unscored boxes (sam3d, detany3d, 3d_mood)
             if unscored_main.exists():
                 with open(unscored_main, 'r') as f:
                     merged_data = json.load(f)
             
+            # Merge algorithm boxes
             if unscored_algo.exists():
                 with open(unscored_algo, 'r') as f:
                     algo_data = json.load(f)
@@ -412,6 +427,21 @@ def copy_bbox_results(tinyval_images, output_dir):
                             merged_data["boxes3d"][i].extend(algo_boxes)
                         else:
                             merged_data["boxes3d"].append(algo_boxes)
+            
+            # Merge LA3D boxes
+            if unscored_la3d.exists():
+                with open(unscored_la3d, 'r') as f:
+                    la3d_data = json.load(f)
+                
+                if merged_data is None:
+                    merged_data = la3d_data
+                else:
+                    # Merge LA3D boxes into merged data
+                    for i, la3d_boxes in enumerate(la3d_data.get("boxes3d", [])):
+                        if i < len(merged_data.get("boxes3d", [])):
+                            merged_data["boxes3d"][i].extend(la3d_boxes)
+                        else:
+                            merged_data["boxes3d"].append(la3d_boxes)
             
             if merged_data is not None:
                 with open(unscored_dst, 'w') as f:

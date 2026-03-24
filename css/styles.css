@@ -17,6 +17,7 @@
     --accent-hover: #2563eb;
     
     /* Model Colors */
+    --color-la3d: #a855f7;
     --color-sam3d: #22c55e;
     --color-algorithm: #f97316;
     --color-3dmood: #ef4444;
@@ -700,7 +701,10 @@ button {
     background: currentColor;
 }
 
+.model-toggle[data-model="la3d"] { color: var(--color-la3d); }
 .model-toggle[data-model="sam3d"] { color: var(--color-sam3d); }
+.model-toggle[data-model="algorithm"] { color: var(--color-algorithm); }
+.model-toggle[data-model="algorithm"].active { border-color: var(--color-algorithm); }
 .model-toggle[data-model="algorithm_regression"] { color: var(--color-algorithm); }
 .model-toggle[data-model="3d_mood"] { color: var(--color-3dmood); }
 .model-toggle[data-model="detany3d"] { color: var(--color-detany3d); }
@@ -876,6 +880,7 @@ button {
     margin-right: var(--spacing-sm);
 }
 
+.model-indicator.la3d { background: var(--color-la3d); }
 .model-indicator.sam3d { background: var(--color-sam3d); }
 .model-indicator.algorithm_regression { background: var(--color-algorithm); }
 .model-indicator.algorithm { background: var(--color-algorithm); }

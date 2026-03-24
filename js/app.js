@@ -11,16 +11,14 @@
 const DATA_BASE = 'data';
 const IMAGES_PER_PAGE = 24;
 
-// NOTE: 'algorithm' boxes are disabled due to coordinate alignment bug in pipeline
-// The algorithm pipeline uses coco.annToMask() which returns masks at original resolution,
-// but depth/camera are for SR images. This causes small objects to be placed at wrong locations.
-// See README.md "Known Issues" section for details on the fix.
-// To re-enable: remove 'algorithm' from DISABLED_MODELS and add back to MODEL_PRIORITY
-const DISABLED_MODELS = new Set(['algorithm', 'algorithm_regression']);
-const MODEL_PRIORITY = ['sam3d', '3d_mood', 'detany3d'];
-// const MODEL_PRIORITY = ['sam3d', 'algorithm', '3d_mood', 'detany3d'];  // Re-enable after pipeline fix
+// NOTE: 'algorithm_regression' is disabled (old model name)
+// 'algorithm' boxes were fixed in Jan 2026 - see README.md "Known Issues" section
+const DISABLED_MODELS = new Set(['algorithm_regression']);
+// LA3D has highest priority (comes before sam3d)
+const MODEL_PRIORITY = ['la3d', 'sam3d', 'algorithm', '3d_mood', 'detany3d'];
 
 const MODEL_DISPLAY_NAMES = {
+    'la3d': 'LA3D',
     'sam3d': 'SAM3D',
     'algorithm_regression': 'Algorithm',
     'algorithm': 'Algorithm',
@@ -47,9 +45,9 @@ let appState = {
     scoredBoxes: null,
     unscoredBoxes: null,
     cameraParams: null,
-    threshold: 5,
+    threshold: 8,
     selectedObject: null,
-    activeModels: new Set(['sam3d', '3d_mood', 'detany3d']),  // algorithm disabled - see README
+    activeModels: new Set(['la3d', 'sam3d', 'algorithm', '3d_mood', 'detany3d']),
     
     // Renderers
     filteredViewer: null,
@@ -596,6 +594,16 @@ function renderFilteredSection() {
 
 function setupModelToggles() {
     const toggles = document.querySelectorAll('.model-toggle');
+    
+    // Sync HTML toggle buttons with appState.activeModels
+    toggles.forEach(toggle => {
+        const model = toggle.dataset.model;
+        if (appState.activeModels.has(model)) {
+            toggle.classList.add('active');
+        } else {
+            toggle.classList.remove('active');
+        }
+    });
     
     toggles.forEach(toggle => {
         toggle.addEventListener('click', () => {

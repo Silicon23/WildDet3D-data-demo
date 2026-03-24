@@ -13,6 +13,7 @@ class OverlayRenderer {
         
         // Model colors
         this.modelColors = {
+            'la3d': '#a855f7',     // Purple - highest priority
             'sam3d': '#22c55e',
             'algorithm_regression': '#f97316',
             'algorithm': '#f97316',

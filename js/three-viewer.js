@@ -25,6 +25,7 @@ class ThreeViewer {
         
         // Model colors
         this.modelColors = {
+            'la3d': 0xa855f7,      // Purple - highest priority
             'sam3d': 0x22c55e,
             'algorithm_regression': 0xf97316,
             'algorithm': 0xf97316,
