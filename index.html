@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tinyval Dataset Visualization</title>
+    <title>Human-Annotated Val Set Visualization</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
         <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <h1 class="header-title">Tinyval Dataset Visualization</h1>
+                <h1 class="header-title">Human-Annotated Val Set Visualization</h1>
                 <div class="header-stats" id="header-stats">
                     <div class="stat-item">
                         <span class="stat-value" id="stat-total">-</span>
@@ -22,7 +22,7 @@
                     </div>
                     <div class="stat-item">
                         <span class="stat-value" id="stat-scored">-</span>
-                        <span class="stat-label">With Scored Boxes</span>
+                        <span class="stat-label">With 3D Boxes</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-value" id="stat-categories">-</span>
@@ -33,19 +33,15 @@
         </header>
 
         <!-- Main Content -->
+        <!-- Open sidebar button (visible when sidebar is collapsed) -->
+        <button class="sidebar-open-btn" id="sidebar-open" title="Open Scene Categories">&rsaquo;</button>
+
         <div class="main-layout">
-            <!-- Sidebar: Scene Tree -->
-            <aside class="sidebar">
+            <!-- Sidebar: Scene Tree (collapsed by default) -->
+            <aside class="sidebar collapsed">
                 <div class="sidebar-header">
                     <h2 class="sidebar-title">Scene Categories</h2>
-                    <button class="btn-collapse-all" id="btn-collapse-all" title="Collapse All">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="4 14 10 14 10 20"></polyline>
-                            <polyline points="20 10 14 10 14 4"></polyline>
-                            <line x1="14" y1="10" x2="21" y2="3"></line>
-                            <line x1="3" y1="21" x2="10" y2="14"></line>
-                        </svg>
-                    </button>
+                    <button class="sidebar-close-btn" id="sidebar-close" title="Close Sidebar">&lsaquo;</button>
                 </div>
                 <div class="tree-container" id="tree-container">
                     <div class="loading">Loading scene tree...</div>
@@ -66,18 +62,17 @@
                         </div>
                         <div class="filter-buttons">
                             <button class="filter-btn active" data-filter="all">All</button>
-                            <button class="filter-btn" data-filter="coco">COCO</button>
-                            <button class="filter-btn" data-filter="lvis">LVIS</button>
-                            <button class="filter-btn" data-filter="v3det">V3Det</button>
-                            <button class="filter-btn" data-filter="obj365">Obj365</button>
+                            <button class="filter-btn" data-filter="coco_val">COCO Val</button>
+                            <button class="filter-btn" data-filter="lvis_train">LVIS Train</button>
+                            <button class="filter-btn" data-filter="obj365_val">Obj365 Val</button>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="image-grid" id="image-grid">
                     <div class="loading">Loading images...</div>
                 </div>
-                
+
                 <div class="pagination" id="pagination">
                     <!-- Pagination will be rendered here -->
                 </div>

@@ -5,6 +5,7 @@ data_prep*.log
 # Data directory (too large for GitHub, ~15GB)
 # Users should run prepare_data.py to generate this
 data/
+data_full2d_depiction
 
 # Python
 __pycache__/
@@ -34,6 +35,12 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Standalone pages / archives
+animate.html
+picker.html
+portable_showcase/
+portable_showcase.tar.gz
 
 # Test files
 test_*.jpg

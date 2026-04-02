@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Detail - Tinyval Visualization</title>
+    <title>Image Detail - Val Set Visualization</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -34,148 +34,62 @@
 
         <!-- Main Content -->
         <main class="detail-content">
-            <!-- Section 1: Filtered Best Boxes (Scored) -->
+            <!-- Human-Annotated 3D Boxes -->
             <section class="detail-section" id="section-filtered">
                 <div class="section-header">
-                    <h2 class="section-title">Filtered Best Boxes</h2>
-                    <p class="section-desc">Shows the highest-scoring box per object, filtered by threshold</p>
+                    <h2 class="section-title">Human-Annotated 3D Boxes</h2>
+                    <p class="section-desc">Human-selected 3D bounding boxes for valid annotations (colored by category)</p>
+                    <button class="download-btn toggle-labels-btn" id="toggle-labels" title="Show/hide category labels">Aa Labels</button>
+                    <button class="download-btn" id="show-all-boxes" title="Show all hidden boxes">Show All</button>
+                    <button class="download-btn combined-dl-btn" id="dl-combined" title="Download 3D projection + point cloud side by side">&#x2B73; Download Combined</button>
                 </div>
-                
-                <div class="threshold-control">
-                    <label for="threshold-slider">Score Threshold:</label>
-                    <input type="range" id="threshold-slider" min="0" max="11" value="8" step="1">
-                    <span class="threshold-value" id="threshold-value">8</span>
-                    <span class="threshold-info" id="threshold-info">Showing 0 / 0 objects</span>
-                </div>
-                
+
                 <div class="viz-grid">
                     <div class="viz-panel">
-                        <h3 class="viz-title">2D Bounding Boxes</h3>
+                        <div class="viz-title-bar">
+                            <h3 class="viz-title">2D Bounding Boxes</h3>
+                            <button class="download-btn" id="dl-2d" title="Save as PNG">&#x2B73;</button>
+                        </div>
                         <div class="viz-container">
                             <canvas id="canvas-2d-filtered"></canvas>
                             <img id="img-2d-filtered" style="display:none;">
                         </div>
                     </div>
-                    
+
                     <div class="viz-panel">
-                        <h3 class="viz-title">3D Boxes Projected to 2D</h3>
+                        <div class="viz-title-bar">
+                            <h3 class="viz-title">3D Boxes Projected to 2D</h3>
+                            <button class="download-btn" id="dl-3d-proj" title="Save as PNG">&#x2B73;</button>
+                        </div>
                         <div class="viz-container">
                             <canvas id="canvas-3d-filtered"></canvas>
                             <img id="img-3d-filtered" style="display:none;">
                         </div>
                     </div>
-                    
+
                     <div class="viz-panel viz-3d">
-                        <h3 class="viz-title">Interactive 3D View</h3>
+                        <div class="viz-title-bar">
+                            <h3 class="viz-title">Interactive 3D View</h3>
+                            <button class="download-btn" id="dl-3d-snap" title="Save current view as PNG">&#x2B73;</button>
+                            <button class="download-btn" id="dl-3d-video" title="Export one rotation cycle as video">&#x23FA; Export Video</button>
+                        </div>
                         <div class="viz-container threejs-container" id="threejs-filtered">
                             <div class="loading">Loading 3D view...</div>
                         </div>
                         <div class="viewer-controls-hint">
-                            <span>🖱️ Left: Rotate</span>
-                            <span>🖱️ Right: Pan</span>
-                            <span>⚙️ Scroll: Zoom</span>
-                            <span>👆 Double-click: Reset</span>
+                            <span>Left: Rotate</span>
+                            <span>Right: Pan</span>
+                            <span>Scroll: Zoom</span>
+                            <span>Double-click: Reset</span>
                         </div>
                     </div>
                 </div>
-            </section>
 
-            <!-- Section 2: Explore All Boxes (Pre-scored) -->
-            <section class="detail-section" id="section-explore">
-                <div class="section-header">
-                    <h2 class="section-title">Explore All Model Outputs</h2>
-                    <p class="section-desc">Compare bounding boxes from different models for each object</p>
-                </div>
-                
-                <div class="explore-controls">
-                    <div class="control-group">
-                        <label class="control-label">Select Object:</label>
-                        <div class="object-buttons" id="object-buttons">
-                            <span class="no-objects">No objects with 3D boxes</span>
-                        </div>
-                    </div>
-                    
-                    <div class="control-group">
-                        <label class="control-label">Show Models:</label>
-                        <div class="model-toggles" id="model-toggles">
-                            <button class="model-toggle active" data-model="la3d">
-                                <span class="toggle-indicator"></span>
-                                LA3D
-                            </button>
-                            <button class="model-toggle active" data-model="sam3d">
-                                <span class="toggle-indicator"></span>
-                                SAM3D
-                            </button>
-                            <button class="model-toggle active" data-model="algorithm">
-                                <span class="toggle-indicator"></span>
-                                Algorithm
-                            </button>
-                            <button class="model-toggle active" data-model="3d_mood">
-                                <span class="toggle-indicator"></span>
-                                3D-MOOD
-                            </button>
-                            <button class="model-toggle active" data-model="detany3d">
-                                <span class="toggle-indicator"></span>
-                                DetAny3D
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="viz-grid">
-                    <div class="viz-panel">
-                        <h3 class="viz-title">2D Bounding Box</h3>
-                        <div class="viz-container">
-                            <canvas id="canvas-2d-explore"></canvas>
-                            <img id="img-2d-explore" style="display:none;">
-                        </div>
-                    </div>
-                    
-                    <div class="viz-panel">
-                        <h3 class="viz-title">3D Boxes Projected to 2D</h3>
-                        <div class="viz-container">
-                            <canvas id="canvas-3d-explore"></canvas>
-                            <img id="img-3d-explore" style="display:none;">
-                        </div>
-                    </div>
-                    
-                    <div class="viz-panel viz-3d">
-                        <h3 class="viz-title">Interactive 3D View</h3>
-                        <div class="viz-container threejs-container" id="threejs-explore">
-                            <div class="loading">Loading 3D view...</div>
-                        </div>
-                        <div class="viewer-controls-hint">
-                            <span>🖱️ Left: Rotate</span>
-                            <span>🖱️ Right: Pan</span>
-                            <span>⚙️ Scroll: Zoom</span>
-                            <span>👆 Double-click: Reset</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Score Comparison Table -->
-                <div class="score-comparison" id="score-comparison">
-                    <h3 class="comparison-title">Score Comparison</h3>
-                    <div class="table-container">
-                        <table class="score-table">
-                            <thead>
-                                <tr>
-                                    <th>Model</th>
-                                    <th>Category</th>
-                                    <th>Scale</th>
-                                    <th>Translation</th>
-                                    <th>Shape</th>
-                                    <th>Tilt</th>
-                                    <th>Rotation</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody id="score-table-body">
-                                <tr>
-                                    <td colspan="8" class="empty-message">Select an object to view scores</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <!-- Annotation list: show/hide and edit category names -->
+                <div class="annotation-list" id="annotation-list">
+                    <h3 class="annotation-list-title">Annotations</h3>
+                    <div class="annotation-list-items" id="annotation-list-items">
+                        <!-- Populated by JS -->
                     </div>
                 </div>
             </section>
@@ -186,7 +100,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/PLYLoader.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
     <script src="js/three-viewer.js"></script>
     <script src="js/overlay-renderer.js"></script>
     <script src="js/app.js"></script>

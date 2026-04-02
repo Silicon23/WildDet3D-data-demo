@@ -11,19 +11,8 @@ class OverlayRenderer {
         this.img = document.getElementById(imgId);
         this.ctx = this.canvas.getContext('2d');
         
-        // Model colors
-        this.modelColors = {
-            'la3d': '#a855f7',     // Purple - highest priority
-            'sam3d': '#22c55e',
-            'algorithm_regression': '#f97316',
-            'algorithm': '#f97316',
-            '3d_mood': '#ef4444',
-            'detany3d': '#3b82f6',
-            'default': '#ffffff'
-        };
-        
-        // 2D box color (ground truth)
-        this.gtColor = '#fbbf24';
+        // Default box color
+        this.defaultColor = '#fbbf24';
         
         this.imageLoaded = false;
         this.intrinsics = null;
@@ -98,35 +87,37 @@ class OverlayRenderer {
         const sw = sx2 - sx1;
         const sh = sy2 - sy1;
         
-        this.ctx.strokeStyle = color || this.gtColor;
+        this.ctx.strokeStyle = color || this.defaultColor;
         this.ctx.lineWidth = 2;
         this.ctx.strokeRect(sx1, sy1, sw, sh);
         
         if (label) {
-            this.drawLabel(label, sx1, sy1 - 5, color || this.gtColor);
+            this.drawLabel(label, sx1, sy1 - 5, color || this.defaultColor);
         }
     }
     
     /**
      * Draw a 3D bounding box projected to 2D
+     * @param {Array} box3d - 10D box format [cx,cy,cz,w,h,l,qw,qx,qy,qz]
+     * @param {string} color - CSS color string (e.g. '#ff0000' or 'hsl(120, 70%, 60%)')
+     * @param {string|null} label - Optional label text
      */
-    draw3DBox(box3d, model = 'default', label = null) {
+    draw3DBox(box3d, color = null, label = null) {
         if (!this.intrinsics) {
             console.warn('Intrinsics not set, cannot project 3D box');
             return;
         }
-        
+
         const corners = this.box3dToCorners(box3d);
         const corners2d = corners.map(c => this.project3Dto2D(c));
-        
+
         // Check if any corner is behind camera
         const valid = corners.every(c => c[2] > 0.1);
         if (!valid) return;
-        
-        const color = this.modelColors[model] || this.modelColors.default;
-        this.ctx.strokeStyle = color;
+
+        this.ctx.strokeStyle = color || this.defaultColor;
         this.ctx.lineWidth = 2;
-        
+
         // Draw edges
         const edges = [
             [0, 1], [1, 2], [2, 3], [3, 0], // bottom face
@@ -244,14 +235,15 @@ class OverlayRenderer {
     
     /**
      * Draw multiple 3D bounding boxes
+     * @param {Array} boxes - Array of {box3d, color, label} objects
      */
     draw3DBoxes(boxes) {
         this.clear();
-        
+
         for (const boxData of boxes) {
             this.draw3DBox(
                 boxData.box3d,
-                boxData.model || 'default',
+                boxData.color || null,
                 boxData.label || null
             );
         }
