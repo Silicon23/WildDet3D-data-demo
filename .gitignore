@@ -1,3 +1,6 @@
+# Claude
+.claude/
+
 # Logs
 *.log
 data_prep*.log
