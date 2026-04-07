@@ -1,5 +1,5 @@
 /**
- * Main Application Logic for Human-Annotated Val Set Visualization
+ * Main Application Logic for WildDet3D-Bench Visualization
  *
  * Handles data loading, state management, and UI coordination.
  * Simplified from tinyval version: single box per annotation, no model comparison.
@@ -428,7 +428,7 @@ function updateImageInfo(image) {
     document.getElementById('dimensions').textContent =
         image.width && image.height ? `${image.width} x ${image.height}` : '';
 
-    document.title = `Image ${image.formatted_id || image.image_id} - Val Set Visualization`;
+    document.title = `Image ${image.formatted_id || image.image_id} - WildDet3D-Bench`;
 }
 
 async function loadCameraParams(image) {

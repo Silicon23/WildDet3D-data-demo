@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Data Preparation Script for Human-Annotated Val Set Visualization
+Data Preparation Script for WildDet3D-Bench Visualization
 
 This script prepares all data needed for the static HTML visualization:
 1. Copies SR RGB images
@@ -669,7 +669,7 @@ def load_scene_classifications():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Prepare visualization data for human-annotated val set")
+    parser = argparse.ArgumentParser(description="Prepare visualization data for WildDet3D-Bench")
     parser.add_argument("--workers", type=int, default=8, help="Number of parallel workers")
     parser.add_argument("--limit", type=int, default=None, help="Limit number of images (for testing)")
     parser.add_argument("--output-dir", type=str, default=None, help="Custom output directory")
@@ -678,14 +678,14 @@ def main():
     output_dir = Path(args.output_dir) if args.output_dir else OUTPUT_DIR
 
     print("=" * 60)
-    print("Human-Annotated Val Set Visualization Data Preparation")
+    print("WildDet3D-Bench Visualization Data Preparation")
     print("=" * 60)
 
     # Create output directories
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Load val set annotations
-    print("\n1. Loading human-annotated val set...")
+    print("\n1. Loading WildDet3D-Bench val set...")
     with open(VAL_JSON_PATH, 'r') as f:
         val_data = json.load(f)
 

@@ -1,6 +1,6 @@
-# WildDet3D Data Visualization
+# WildDet3D-Bench Visualization
 
-Interactive visualization of human-annotated 3D bounding boxes from the [WildDet3D](https://huggingface.co/datasets/Silicon23/WildDet3D-demo) dataset. Browse 2,196 images from COCO, LVIS, and Objects365 with projected 3D boxes and interactive point cloud views.
+Interactive visualization of 3D bounding boxes from the [WildDet3D-Bench](https://huggingface.co/datasets/Silicon23/WildDet3D-demo) dataset. Browse 2,196 images from COCO, LVIS, and Objects365 with projected 3D boxes and interactive point cloud views.
 
 **[Live Demo](https://silicon23.github.io/WildDet3D-data-demo/)**
 
@@ -72,7 +72,7 @@ All data is served from [`Silicon23/WildDet3D-demo`](https://huggingface.co/data
 
 ## Data Source
 
-The visualization displays the **human-annotated validation set** from the WildDet3D 3D bounding box detection pipeline:
+The visualization displays the **WildDet3D-Bench** validation set from the WildDet3D 3D bounding box detection pipeline:
 
 - **2,470 images** from COCO (424), LVIS (1,113), and Objects365 (933)
 - **9,256 valid annotations** across 2,196 images (274 images have no valid boxes after filtering)
