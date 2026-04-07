@@ -443,6 +443,29 @@ button {
     border-color: var(--accent-primary);
 }
 
+.shuffle-btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    margin-left: var(--spacing-sm);
+}
+
+.shuffle-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+}
+
+.shuffle-btn.active {
+    color: white;
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+
 /* ============================================================================
    Image Grid
    ============================================================================ */
