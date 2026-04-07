@@ -531,6 +531,12 @@ def process_single_image(image_entry):
         if (lookup_dataset, image_id) in scene_by_dataset_and_id:
             scene_path = scene_by_dataset_and_id[(lookup_dataset, image_id)]
 
+        # Remap scene paths to updated hierarchy
+        SCENE_REMAPS = {
+            "indoor/office": "indoor/public_space/office",
+        }
+        scene_path = SCENE_REMAPS.get(scene_path, scene_path)
+
         # Get image dimensions
         width = image_entry.get("width", 0)
         height = image_entry.get("height", 0)
