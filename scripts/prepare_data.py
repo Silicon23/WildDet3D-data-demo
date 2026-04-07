@@ -766,6 +766,7 @@ def main():
     print("\n6. Building master index...")
 
     index = {
+        "total_images_in_dataset": len(val_images),
         "total_images": len(images_metadata),
         "scene_tree": scene_tree,
         "images": images_metadata,

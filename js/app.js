@@ -152,11 +152,11 @@ async function initIndexPage() {
 }
 
 function updateStats() {
-    const total = appState.index.total_images;
-    const withBoxes = appState.images.filter(img => img.has_boxes).length;
+    const totalInDataset = appState.index.total_images_in_dataset || appState.index.total_images;
+    const withBoxes = appState.index.total_images;
     const categories = Object.keys(appState.index.images_by_scene || {}).length;
 
-    document.getElementById('stat-total').textContent = total.toLocaleString();
+    document.getElementById('stat-total').textContent = totalInDataset.toLocaleString();
     document.getElementById('stat-scored').textContent = withBoxes.toLocaleString();
     document.getElementById('stat-categories').textContent = categories.toLocaleString();
 }
