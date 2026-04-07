@@ -68,7 +68,7 @@ let appState = {
     currentImage: null,
     boxData: null,
     cameraParams: null,
-    showLabels: false,
+    showLabels: true,
     hiddenAnnotations: new Set(),  // annotation indices hidden by user
     categoryOverrides: {},         // annotationIdx -> custom category name
 
