@@ -27,6 +27,7 @@ class OverlayRenderer {
                 resolve();
             };
             this.img.onerror = reject;
+            this.img.crossOrigin = 'anonymous';
             this.img.src = imagePath;
         });
     }
