@@ -1,6 +1,6 @@
 # WildDet3D-Bench Visualization
 
-Interactive visualization of 3D bounding boxes from the [WildDet3D-Bench](https://huggingface.co/datasets/Silicon23/WildDet3D-demo) dataset. Browse 2,196 images from COCO, LVIS, and Objects365 with projected 3D boxes and interactive point cloud views.
+Interactive visualization of 3D bounding boxes from the [WildDet3D-Bench](https://huggingface.co/datasets/allenai/WildDet3D-visualization-source) dataset. Browse 2,196 images from COCO, LVIS, and Objects365 with projected 3D boxes and interactive point cloud views.
 
 **[Live Demo](https://silicon23.github.io/WildDet3D-data-demo/)**
 
@@ -59,7 +59,7 @@ visualization/
 
 ### Data (hosted on HuggingFace)
 
-All data is served from [`Silicon23/WildDet3D-demo`](https://huggingface.co/datasets/Silicon23/WildDet3D-demo):
+All data is served from [`allenai/WildDet3D-visualization-source`](https://huggingface.co/datasets/allenai/WildDet3D-visualization-source):
 
 | Directory | Description | Size |
 |-----------|-------------|------|

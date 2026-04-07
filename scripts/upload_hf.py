@@ -4,7 +4,7 @@
 import os
 from huggingface_hub import HfApi
 
-REPO_ID = "Silicon23/WildDet3D-demo"
+REPO_ID = "allenai/WildDet3D-visualization-source"
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 TOKEN = open(os.path.expanduser("~/.cache/huggingface/token")).read().strip()
 

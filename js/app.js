@@ -9,7 +9,7 @@
 // Configuration
 // ============================================================================
 
-const DATA_BASE = 'https://huggingface.co/datasets/Silicon23/WildDet3D-demo/resolve/main/data';
+const DATA_BASE = 'https://huggingface.co/datasets/allenai/WildDet3D-visualization-source/resolve/main/data';
 const IMAGES_PER_PAGE = 24;
 
 // ============================================================================
