@@ -63,6 +63,7 @@ let appState = {
     selectedScene: null,
     datasetFilter: 'all',
     searchQuery: '',
+    shuffled: false,
 
     // Detail page state
     currentImage: null,
@@ -141,6 +142,13 @@ async function initIndexPage() {
             });
         });
 
+        // Shuffle toggle
+        document.getElementById('shuffle-toggle')?.addEventListener('click', (e) => {
+            appState.shuffled = !appState.shuffled;
+            e.currentTarget.classList.toggle('active', appState.shuffled);
+            filterImages();
+        });
+
         // Initial render
         renderImageGrid();
 
@@ -204,6 +212,14 @@ function filterImages() {
             String(img.original_id).includes(query) ||
             img.formatted_id.includes(query)
         );
+    }
+
+    // Shuffle if toggled on (fresh shuffle each time)
+    if (appState.shuffled) {
+        for (let i = filtered.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [filtered[i], filtered[j]] = [filtered[j], filtered[i]];
+        }
     }
 
     appState.filteredImages = filtered;
